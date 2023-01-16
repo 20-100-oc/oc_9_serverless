@@ -10,10 +10,9 @@ def recommend(user_id):
         1: [357, 387, 855, 487, 54], 
     }
 
-    user_recs = recs[int(user_id)]
-    #return ' '.join(str(x) for x in user_recs)
+    #user_recs = recs[int(user_id)]
+    user_recs = recs[user_id]
     return user_recs
-    #return str(user_recs)
 
 
 
@@ -23,7 +22,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # get user_id
     key_word = 'userID'
 
-    user_id = req.params.get(key_word)
+    #user_id = req.params.get(key_word)
+    user_id_str = req.params.get(key_word)
+    user_id = int(user_id_str)
     if not user_id:
         try:
             req_body = req.get_json()
