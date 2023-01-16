@@ -11,7 +11,9 @@ def recommend(user_id):
     }
 
     user_recs = recs[int(user_id)]
-    return ' '.join(str(x) for x in user_recs)
+    #return ' '.join(str(x) for x in user_recs)
+    return user_recs
+    #return str(user_recs)
 
 
 
