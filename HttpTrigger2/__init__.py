@@ -37,7 +37,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         #success_message = f'User ID: {user_id}\nRecommended articles: {user_recs}'
         #return func.HttpResponse(success_message)
         res = {'user_id': user_id, 'user_recs': user_recs}
-        return func.HttpResponse(res)
+        return func.HttpResponse(str(res))
     else:
         error_message = f'This HTTP triggered function executed successfully.\nPass "{key_word}" in the query string or in the request body for a personalized response.'
         return func.HttpResponse(error_message, status_code=200)
