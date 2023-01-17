@@ -5,8 +5,6 @@ from tempfile import TemporaryFile
 import numpy as np
 import azure.functions as func
 from azure.storage.blob import BlobClient
-#from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, BlockBlobService
-
 
 
 def recommend_old(user_id_str, n):
@@ -17,17 +15,16 @@ def recommend_old(user_id_str, n):
         1: [357, 387, 855, 487, 54], 
     }
 
-    user_recs = recs[user_id][:n]
+    article_id = user_id   # temp
+    user_recs = recs[article_id][:n]
     return user_recs
 
 
 
 def get_recs_file():
-    #account_url='https://oc9serverlessgroup87ea.blob.core.windows.net'
     container_name = 'data-blob'
     blob_name = 'recs_idx_20_test.npy'
     connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A==;EndpointSuffix=core.windows.net"
-    #key1 = "e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A=="
 
     blob = BlobClient.from_connection_string(
         conn_str=connection_string, 
@@ -47,12 +44,12 @@ def get_recs_file():
 def recommend(user_id_str, n):
     user_id = int(user_id_str)
 
-    '''
     #TODO get last seen article form user
     try:
         article_id = user_id   #temp
     except:
-        #TODO new user, no article read
+        # new user, no article read
+        #TODO need to use cold start
         pass
 
     #get recommendations file from blob
@@ -63,13 +60,14 @@ def recommend(user_id_str, n):
         user_recs = list(user_recs)
     except:
         # new article: not in recs file
+        #TODO need to compute cosine similarites
         pass
-    '''
+    
 
-    article_id = user_id   #temp
-    recs = get_recs_file()
-    user_recs = recs[article_id,:n]
-    user_recs = list(user_recs)
+    #article_id = user_id   #temp
+    #recs = get_recs_file()
+    #user_recs = recs[article_id,:n]
+    #user_recs = list(user_recs)
 
     return user_recs
     
@@ -93,7 +91,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     n = 5
     if user_id:
         user_recs = recommend(user_id, n)
-        #user_recs = recommend_old(user_id, n)
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
     else:
