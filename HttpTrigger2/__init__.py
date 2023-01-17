@@ -47,6 +47,7 @@ def get_recs_file():
 def recommend(user_id_str, n):
     user_id = int(user_id_str)
 
+    '''
     #TODO get last seen article form user
     try:
         article_id = user_id   #temp
@@ -63,7 +64,13 @@ def recommend(user_id_str, n):
     except:
         # new article: not in recs file
         pass
+    '''
 
+    article_id = user_id   #temp
+    recs = get_recs_file()
+    user_recs = recs[article_id,:n]
+    user_recs = list(user_recs)
+    
     return user_recs
 
     
