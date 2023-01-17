@@ -70,7 +70,7 @@ def recommend(user_id_str, n):
     recs = get_recs_file()
     user_recs = recs[article_id,:n]
     user_recs = list(user_recs)
-    
+
     return user_recs
 
     
@@ -94,7 +94,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # get "n" recommendations and respond with a string
     n = 5
     if user_id:
-        user_recs = recommend(user_id, n)
+        #user_recs = recommend(user_id, n)
+        user_recs = recommend_old(user_id, n)
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
     else:
