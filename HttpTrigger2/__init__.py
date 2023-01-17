@@ -59,6 +59,7 @@ def recommend(user_id_str, n):
 
     try:
         user_recs = recs[article_id,:n]
+        user_recs = list(user_recs)
     except:
         # new article: not in recs file
         pass
