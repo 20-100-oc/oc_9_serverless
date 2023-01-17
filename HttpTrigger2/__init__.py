@@ -1,17 +1,71 @@
+import os
 import logging
+from tempfile import TemporaryFile
 
+import numpy as np
 import azure.functions as func
+from azure.storage.blob import BlobClient
+#from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, BlockBlobService
 
 
 
-def recommend(user_id):
+def recommend_old(user_id_str, n):
+    user_id = int(user_id_str)
+
     recs = {
         0: [657, 325, 482, 45, 5], 
         1: [357, 387, 855, 487, 54], 
     }
 
-    user_recs = recs[int(user_id)]
+    user_recs = recs[user_id][:n]
     return user_recs
+
+
+
+def get_recs_file():
+    #account_url='https://oc9serverlessgroup87ea.blob.core.windows.net'
+    container_name = 'data-blob'
+    blob_name = 'recs_idx_20_test.npy'
+    connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A==;EndpointSuffix=core.windows.net"
+    #key1 = "e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A=="
+
+    blob = BlobClient.from_connection_string(
+        conn_str=connection_string, 
+        container_name=container_name, 
+        blob_name=blob_name)
+
+    with TemporaryFile() as my_blob:
+        blob_data = blob.download_blob()
+        blob_data.readinto(my_blob)
+        my_blob.seek(0)   # don't forget this
+        recs = np.load(my_blob)
+    
+    return recs
+
+
+
+def recommend(user_id_str, n):
+    user_id = int(user_id_str)
+
+    #TODO get last seen article form user
+    try:
+        article_id = user_id   #temp
+    except:
+        #TODO new user, no article read
+        pass
+
+    #get recommendations file from blob
+    recs = get_recs_file()
+
+    try:
+        user_recs = recs[article_id,:n]
+    except:
+        # new article: not in recs file
+        pass
+
+    return user_recs
+
+    
 
 
 
@@ -20,7 +74,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     # get user_id
     key_word = 'userID'
-
     user_id = req.params.get(key_word)
     if not user_id:
         try:
@@ -30,12 +83,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         else:
             user_id = req_body.get(key_word)
 
-    # process and respond
+    # get "n" recommendations and respond with a string
+    n = 5
     if user_id:
-        user_recs = recommend(user_id)
-
-        #success_message = f'User ID: {user_id}\nRecommended articles: {user_recs}'
-        #return func.HttpResponse(success_message)
+        user_recs = recommend(user_id, n)
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
     else:
