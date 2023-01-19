@@ -76,10 +76,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     # get user_id
+    dict_key = 'key'
     key_word = 'userID'
     connection_string_param = 'connection_string'
 
     '''
+    #works but connection string is on API
     user_id = req.params.get(key_word)
     if not user_id:
         try:
@@ -89,6 +91,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         else:
             user_id = req_body.get(key_word)
     '''
+    '''    
     user_id = req.params.get(key_word)
     connection_string = req.params.get(connection_string_param)
     if not user_id:
@@ -99,6 +102,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         else:
             user_id, connection_string = req_body.get(key_word)
             connection_string = req.params.get(connection_string_param)
+    '''
+
+    user_id, connection_string = req.params.get(dict_key)
+    if not user_id:
+        try:
+            req_body = req.get_json()
+        except ValueError:
+            pass
+        else:
+            user_id, connection_string = req_body.get(dict_key)
 
     # get "n" recommendations and respond with a string
     n = 5
