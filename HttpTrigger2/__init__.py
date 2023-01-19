@@ -21,10 +21,10 @@ def recommend_old(user_id_str, n):
 
 
 
-def get_recs_file():
+def get_recs_file(connection_string):
     container_name = 'data-blob'
     blob_name = 'recs_idx_20_test.npy'
-    connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A==;EndpointSuffix=core.windows.net"
+    #connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A==;EndpointSuffix=core.windows.net"
 
     blob = BlobClient.from_connection_string(
         conn_str=connection_string, 
@@ -41,33 +41,32 @@ def get_recs_file():
 
 
 
-def recommend(user_id_str, n):
+def compute_recs(connection_string):
+    pass
+
+
+
+def recommend(user_id_str, n, connection_string):
     user_id = int(user_id_str)
 
-    #TODO get last seen article form user
+    #TODO get last seen article from user
     try:
         article_id = user_id   #temp
     except:
         # new user, no article read
-        #TODO need to use cold start
+        #TODO use cold start
         pass
 
     #get recommendations file from blob
-    recs = get_recs_file()
+    recs_from_file = get_recs_file(connection_string)
 
     try:
-        user_recs = recs[article_id,:n]
+        user_recs = recs_from_file[article_id,:n]
         user_recs = list(user_recs)
     except:
         # new article: not in recs file
-        #TODO need to compute cosine similarites
+        #TODO compute cosine similarites
         pass
-    
-
-    #article_id = user_id   #temp
-    #recs = get_recs_file()
-    #user_recs = recs[article_id,:n]
-    #user_recs = list(user_recs)
 
     return user_recs
     
@@ -78,6 +77,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     # get user_id
     key_word = 'userID'
+    connection_string_param = 'connection_string'
+
+    '''
     user_id = req.params.get(key_word)
     if not user_id:
         try:
@@ -86,6 +88,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             pass
         else:
             user_id = req_body.get(key_word)
+    '''
+    user_id = req.params.get(key_word)
+    connection_string = req.params.get(connection_string_param)
+    if not user_id:
+        try:
+            req_body = req.get_json()
+        except ValueError:
+            pass
+        else:
+            user_id, connection_string = req_body.get(key_word)
+            connection_string = req.params.get(connection_string_param)
 
     # get "n" recommendations and respond with a string
     n = 5
