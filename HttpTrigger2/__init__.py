@@ -104,14 +104,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             connection_string = req.params.get(connection_string_param)
     '''
 
-    user_id, connection_string = req.params.get(dict_key)
+    req = req.params.get(dict_key)
+    user_id, connection_string = ' '.split(req)
     if not user_id:
         try:
             req_body = req.get_json()
         except ValueError:
             pass
-        else:
-            user_id, connection_string = req_body.get(dict_key)
 
     # get "n" recommendations and respond with a string
     n = 5
@@ -120,5 +119,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
     else:
-        error_message = f'This HTTP triggered function executed successfully.\nPass "{key_word}" in the query string or in the request body for a personalized response.'
+        #error_message = f'This HTTP triggered function executed successfully.\nPass "{key_word}" in the query string or in the request body for a personalized response.'
+        error_message = f'This HTTP triggered function executed successfully.'
         return func.HttpResponse(error_message, status_code=200)
