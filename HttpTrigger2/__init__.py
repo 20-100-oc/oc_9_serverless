@@ -103,7 +103,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # get "n" recommendations and respond with a string
     n = 5
     if user_id:
-        user_recs = recommend(user_id, n)
+        user_recs = recommend(user_id, n, connection_string)
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
     else:
