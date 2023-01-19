@@ -24,7 +24,7 @@ def recommend_old(user_id_str, n):
 def get_recs_file(connection_string):
     container_name = 'data-blob'
     blob_name = 'recs_idx_20_test.npy'
-    #connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A==;EndpointSuffix=core.windows.net"
+    #connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=GGR/fUyGsTQb3m2wC6qnTQuc/BGok7FkGVP7gVe9CsVyGzlFMQyhI9WLMwUenCne3FbERfBa1C5M+AStdowY0g==;EndpointSuffix=core.windows.net"
 
     blob = BlobClient.from_connection_string(
         conn_str=connection_string, 
@@ -40,10 +40,10 @@ def get_recs_file(connection_string):
     return recs
 
 
-
+'''
 def compute_recs(connection_string):
-    pass
 
+'''
 
 
 def recommend(user_id_str, n, connection_string):
@@ -76,11 +76,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     # get user_id
-    dict_key = 'key'
     key_word = 'userID'
-    connection_string_param = 'connection_string'
+    dict_key = 'key'
+    #connection_string_param = 'connection_string'
+    connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=GGR/fUyGsTQb3m2wC6qnTQuc/BGok7FkGVP7gVe9CsVyGzlFMQyhI9WLMwUenCne3FbERfBa1C5M+AStdowY0g==;EndpointSuffix=core.windows.net"
 
-    '''
     #works but connection string is on API
     user_id = req.params.get(key_word)
     if not user_id:
@@ -90,7 +90,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             pass
         else:
             user_id = req_body.get(key_word)
-    '''
+
     '''    
     user_id = req.params.get(key_word)
     connection_string = req.params.get(connection_string_param)
@@ -103,7 +103,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             user_id, connection_string = req_body.get(key_word)
             connection_string = req.params.get(connection_string_param)
     '''
-
+    '''
     req = req.params.get(dict_key)
     user_id, connection_string = ' '.split(req)
     if not user_id:
@@ -111,10 +111,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             req_body = req.get_json()
         except ValueError:
             pass
+    '''
 
     # get "n" recommendations and respond with a string
     n = 5
     if user_id:
+        #user_recs = recommend(user_id, n)
         user_recs = recommend(user_id, n, connection_string)
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
