@@ -15,6 +15,34 @@
       "type": "http",
       "direction": "out",
       "name": "$return"
+    }, 
+    {
+      "name": "recsFile",
+      "type": "blob",
+      "dataType": "binary",
+      "path": "data-container/recs_idx_5.npy",
+      "connection": "AzureWebJobsStorage",
+      "direction": "in"
+    }, 
+    {
+      "name": "embeddings",
+      "type": "blob",
+      "dataType": "binary",
+      "path": "data-container/article_embeddings.pickle",
+      "connection": "AzureWebJobsStorage",
+      "direction": "in"
+    }, 
+    {
+      "name": "timeClick",
+      "type": "blob",
+      "dataType": "binary",
+      "path": "data-container/time_click.pkl",
+      "connection": "AzureWebJobsStorage",
+      "direction": "in"
     }
   ]
 }
+
+
+
+
