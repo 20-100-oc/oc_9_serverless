@@ -2,6 +2,6 @@
 # The Python Worker is managed by Azure Functions platform
 # Manually managing azure-functions-worker may cause unexpected issues
 
-numpy==1.24.1
+numpy
 azure-functions
 azure-storage-blob
