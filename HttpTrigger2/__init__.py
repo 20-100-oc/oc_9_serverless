@@ -20,11 +20,11 @@ def recommend_old(user_id_str, n):
     return user_recs
 
 
-#def get_recs_file():
-def get_recs_file(connection_string):
+#def get_recs_file(connection_string):
+def get_recs_file():
     container_name = 'data-blob'
     blob_name = 'recs_idx_20.npy'
-    #connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=GGR/fUyGsTQb3m2wC6qnTQuc/BGok7FkGVP7gVe9CsVyGzlFMQyhI9WLMwUenCne3FbERfBa1C5M+AStdowY0g==;EndpointSuffix=core.windows.net"
+    connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=GGR/fUyGsTQb3m2wC6qnTQuc/BGok7FkGVP7gVe9CsVyGzlFMQyhI9WLMwUenCne3FbERfBa1C5M+AStdowY0g==;EndpointSuffix=core.windows.net"
 
     blob = BlobClient.from_connection_string(
         conn_str=connection_string, 
@@ -47,8 +47,8 @@ def compute_recs(connection_string):
 
 
 
-#def recommend(user_id_str, n):
-def recommend(user_id_str, n, connection_string):
+#def recommend(user_id_str, n, connection_string):
+def recommend(user_id_str, n):
     user_id = int(user_id_str)
 
     #TODO get last seen article from user
@@ -60,8 +60,8 @@ def recommend(user_id_str, n, connection_string):
         article_id = 4   #temp
 
     #get recommendations file from blob
-    #recs_from_file = get_recs_file()
-    recs_from_file = get_recs_file(connection_string)
+    recs_from_file = get_recs_file()
+    #recs_from_file = get_recs_file(connection_string)
 
     try:
         user_recs = recs_from_file[article_id,:n]
@@ -69,7 +69,7 @@ def recommend(user_id_str, n, connection_string):
     except:
         # new article: not in recs file
         #TODO compute cosine similarites
-        user_recs = compute_recs()   #temp
+        user_recs = compute_recs()
 
     return user_recs
     
@@ -80,9 +80,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     # get user_id
     key_word = 'userID'
-    dict_key = 'key'
+    #dict_key = 'key'
     #connection_string_param = 'connection_string'
-    connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=GGR/fUyGsTQb3m2wC6qnTQuc/BGok7FkGVP7gVe9CsVyGzlFMQyhI9WLMwUenCne3FbERfBa1C5M+AStdowY0g==;EndpointSuffix=core.windows.net"
+    #connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=GGR/fUyGsTQb3m2wC6qnTQuc/BGok7FkGVP7gVe9CsVyGzlFMQyhI9WLMwUenCne3FbERfBa1C5M+AStdowY0g==;EndpointSuffix=core.windows.net"
     
     #works but connection string is on API
     user_id = req.params.get(key_word)
@@ -119,11 +119,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # get "n" recommendations and respond with a string
     n = 5
     if user_id:
-        #user_recs = recommend(user_id, n)
-        user_recs = recommend(user_id, n, connection_string)
+        user_recs = recommend(user_id, n)
+        #user_recs = recommend(user_id, n, connection_string)
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
     else:
-        #error_message = f'This HTTP triggered function executed successfully.\nPass "{key_word}" in the query string or in the request body for a personalized response.'
-        error_message = f'This HTTP triggered function executed successfully.'
+        error_message = f'This HTTP triggered function executed successfully.\nPass "{key_word}" in the query string or in the request body for a personalized response.'
         return func.HttpResponse(error_message, status_code=200)
