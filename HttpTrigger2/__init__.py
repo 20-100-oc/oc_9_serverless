@@ -3,36 +3,28 @@ from tempfile import TemporaryFile
 from io import BytesIO
 
 import numpy as np
+import pandas as pd
 import azure.functions as func
 from azure.storage.blob import BlobClient
 
 
-'''
-def get_recs_file():
-    container_name = 'data-blob'
-    blob_name = 'recs_idx_5_test.npy'
-    connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=e5o6Ta6bAELTG23mpWue6ssJ/RfqSLmnYtOf/lDPRPE9r2bfwAqgQYopUf6wc3drAarUz8RJZDO3+AStCuZB6A==;EndpointSuffix=core.windows.net"
 
-    blob = BlobClient.from_connection_string(
-        conn_str=connection_string, 
-        container_name=container_name, 
-        blob_name=blob_name)
-
-    with TemporaryFile() as my_blob:
-        blob_data = blob.download_blob()
-        blob_data.readinto(my_blob)
-        my_blob.seek(0)   # don't forget this
-        recs = np.load(my_blob)
-    
-    return recs
-'''
+def get_user_read_list(user_id, time_click_df):
+    group_user = time_click_df[time_click_df['user_id'] == user_id]
+    sorted_group = group_user.sort_values('click_timestamp', ascending=False)
+    read_list = list(sorted_group['click_article_id'])
+    return read_list
 
 
-def recommend(user_id_str, n, recsFile):
+
+def recommend(user_id_str, n, timeClick, recsFile):
     user_id = int(user_id_str)
 
     #TODO get last seen article form user
-    article_id = user_id
+    #article_id = user_id  # temp
+    time_click = time_click = pd.read_pickle(BytesIO(timeClick.read()))
+    read_list = get_user_read_list(user_id, time_click)
+    article_id = read_list[0]
     '''
     try:
        #temp
@@ -42,8 +34,6 @@ def recommend(user_id_str, n, recsFile):
     '''
 
     #get recommendations file from blob
-    #recs = get_recs_file()
-    #TRYING TO MAKE THIS WORK:
     recs = np.load(BytesIO(recsFile.read()))
 
     user_recs = recs[article_id,:n]
@@ -81,7 +71,8 @@ def main(req: func.HttpRequest,
     # get "n" recommendations and respond with a string
     n = 5
     if user_id:
-        user_recs = recommend(user_id, n, recsFile)
+        user_recs = recommend(user_id, n, timeClick, recsFile)
+
         res = {'user_id': user_id, 'user_recs': user_recs}
         return func.HttpResponse(str(res))
     else:
