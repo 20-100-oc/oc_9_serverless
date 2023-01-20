@@ -23,7 +23,7 @@ def recommend_old(user_id_str, n):
 #def get_recs_file():
 def get_recs_file(connection_string):
     container_name = 'data-blob'
-    blob_name = 'recs_idx_20_test.npy'
+    blob_name = 'recs_idx_20.npy'
     #connection_string = "DefaultEndpointsProtocol=https;AccountName=oc9serverlessgroup87ea;AccountKey=GGR/fUyGsTQb3m2wC6qnTQuc/BGok7FkGVP7gVe9CsVyGzlFMQyhI9WLMwUenCne3FbERfBa1C5M+AStdowY0g==;EndpointSuffix=core.windows.net"
 
     blob = BlobClient.from_connection_string(
@@ -40,11 +40,11 @@ def get_recs_file(connection_string):
     return recs
 
 
-'''
-def compute_recs(:
-    def compute_recs(connection_string):
 
-'''
+def compute_recs(connection_string):
+    res = [0, 1, 2]
+    return res   #temp
+
 
 
 #def recommend(user_id_str, n):
@@ -57,7 +57,7 @@ def recommend(user_id_str, n, connection_string):
     except:
         # new user, no article read
         #TODO use cold start
-        pass
+        article_id = 4   #temp
 
     #get recommendations file from blob
     #recs_from_file = get_recs_file()
@@ -69,7 +69,7 @@ def recommend(user_id_str, n, connection_string):
     except:
         # new article: not in recs file
         #TODO compute cosine similarites
-        pass
+        user_recs = compute_recs()   #temp
 
     return user_recs
     
