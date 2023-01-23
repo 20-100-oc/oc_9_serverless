@@ -25,7 +25,7 @@
       "direction": "in"
     }, 
     {
-      "name": "embeddings",
+      "name": "embeddingsFile",
       "type": "blob",
       "dataType": "binary",
       "path": "data-container/article_embeddings.pickle",
