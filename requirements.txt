@@ -4,6 +4,6 @@
 
 numpy
 pandas
+scikit-learn
 azure-functions
 azure-storage-blob
-
