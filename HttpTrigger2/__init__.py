@@ -25,6 +25,7 @@ def extract_with_indices(x, idx):
 
 def compute_top_n(idx, n, embeddingsFile):
     embeddings = np.load(BytesIO(embeddingsFile.read()))
+    #embeddings = np.load(BytesIO(embeddingsFile.read()), allow_pickle=True)
 
     # compute cosine similarities
     embedding_rows = embeddings[idx,:].reshape(1, -1)
