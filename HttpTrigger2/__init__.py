@@ -23,9 +23,7 @@ def extract_with_indices(x, idx):
 
 
 
-def compute_top_n(idx, n, embeddingsFile):
-    embeddings = np.load(BytesIO(embeddingsFile.read()))
-
+def compute_top_n(idx, n, embeddings):
     # compute cosine similarities
     embedding_rows = embeddings[idx,:].reshape(1, -1)
     embeddings_without_i = np.delete(embeddings, idx, axis=0)
@@ -53,19 +51,20 @@ def recommend(user_id_str, n, timeClick, recsFile, embeddingsFile):
         #TODO use cold start
         pass
     
-    '''
+    
     try:
         # get recommendations file from blob
         recs = np.load(BytesIO(recsFile.read()))
         user_recs = recs[article_id,:n]
         #user_recs = list(user_recs)
     except IndexError:
-        # new article, not in recs file:
-        # compute cosine similarites
-        user_recs = compute_top_n(article_id, n, embeddingsFile)
-    '''
+        # new article, not in recs file: compute cosine similarites
+        embeddings = np.load(BytesIO(embeddingsFile.read()))
+        user_recs = compute_top_n(article_id, n, embeddings)
+    
     #temp
-    user_recs = compute_top_n(article_id, n, embeddingsFile)
+    #embeddings = np.load(BytesIO(embeddingsFile.read()))
+    #user_recs = compute_top_n(article_id, n, embeddingsFile)
 
     user_recs = list(user_recs)
     return user_recs
