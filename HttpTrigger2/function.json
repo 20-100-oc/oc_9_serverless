@@ -28,7 +28,7 @@
       "name": "embeddingsFile",
       "type": "blob",
       "dataType": "binary",
-      "path": "data-container/embeddings_file.npy",
+      "path": "data-container/embeddings_pca_99.npy",
       "connection": "AzureWebJobsStorage",
       "direction": "in"
     }, 
