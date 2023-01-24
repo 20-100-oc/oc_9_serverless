@@ -37,7 +37,7 @@ def compute_top_n(idx, n, embeddingsFile):
     top_n_values = extract_with_indices(res, top_n_indices)
     top_n_indices = extract_with_indices(top_n_indices, np.flip(np.argsort(top_n_values), axis=1))
 
-    return res
+    return top_n_indices[0,:]
 
 
 
@@ -59,7 +59,7 @@ def recommend(user_id_str, n, timeClick, recsFile, embeddingsFile):
         # get recommendations file from blob
         recs = np.load(BytesIO(recsFile.read()))
         user_recs = recs[article_id,:n]
-        user_recs = list(user_recs)
+        #user_recs = list(user_recs)
     except IndexError:
         # new article, not in recs file:
         # compute cosine similarites
@@ -68,6 +68,7 @@ def recommend(user_id_str, n, timeClick, recsFile, embeddingsFile):
     #temp
     user_recs = compute_top_n(article_id, n, embeddingsFile)
 
+    user_recs = list(user_recs)
     return user_recs
 
 
